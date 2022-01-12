@@ -1,6 +1,7 @@
-const Product = require("../models/products");
-const logger = require("../../util/logger");
 const mongoose = require("mongoose");
+const logger = require("../../util/logger");
+
+const Product = require("../models/product");
 
 exports.createProduct = (req, res, next) => {
   const product = new Product({

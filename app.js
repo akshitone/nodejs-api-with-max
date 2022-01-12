@@ -1,14 +1,16 @@
 const express = require("express");
 const mongoose = require("mongoose");
 
-const productRoutes = require("./api/routes/products");
-const orderRoutes = require("./api/routes/orders");
+const productRoutes = require("./api/routes/product");
+const orderRoutes = require("./api/routes/order");
+const authRoutes = require("./api/routes/auth");
 const logger = require("./util/logger");
 
 const app = express();
 
 app.use("/orders", orderRoutes);
 app.use("/products", productRoutes);
+app.use("/auth", authRoutes);
 
 const mongoURL = `mongodb://root:root@172.22.0.2:27017/?authSource=admin`;
 
@@ -28,7 +30,7 @@ app.get("/", (req, res) => {
 });
 
 app.use((req, res, next) => {
-  const error = new Error("Not found");
+  const error = new Error("Endpoint not found");
   error.status = 404;
   next(error);
 });

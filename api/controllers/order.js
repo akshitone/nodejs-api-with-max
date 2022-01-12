@@ -1,8 +1,8 @@
-const logger = require("../../util/logger");
 const mongoose = require("mongoose");
+const logger = require("../../util/logger");
 
-const Order = require("../models/orders");
-const Product = require("../models/products");
+const Order = require("../models/order");
+const Product = require("../models/product");
 
 exports.createOrder = (req, res, next) => {
   const productIds = req.body.products.map((product) => product.productId);
