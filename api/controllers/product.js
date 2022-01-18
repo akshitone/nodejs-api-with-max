@@ -2,28 +2,15 @@ const mongoose = require("mongoose");
 const logger = require("../../util/logger");
 
 const Product = require("../models/product");
+const ProductHelper = require("../helpers/product");
+
+const productHelper = new ProductHelper();
 
 exports.createProduct = (req, res, next) => {
-  const product = new Product({
-    _id: mongoose.Types.ObjectId(),
-    name: req.body.name,
-    price: req.body.price,
-  });
-  product
-    .save()
-    .then((result) => {
-      res.status(201).json({
-        message: "Product created successfully",
-        createdProduct: {
-          _id: result._id,
-          name: result.name,
-          price: result.price,
-          // request: {
-          //   type: "GET",
-          //   url: `http://localhost:3000/products/${result._id}`,
-          // },
-        },
-      });
+  productHelper
+    .createProduct(req.body)
+    .then((product) => {
+      res.status(201).json(product);
       logger.info("Product created successfully");
     })
     .catch((err) => {
@@ -35,25 +22,10 @@ exports.createProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-  Product.find()
-    .select("_id name price")
+  productHelper
+    .findProducts()
     .then((products) => {
-      // const response = {
-      //   count: products.length,
-      //   products: products.map((product) => {
-      //     return {
-      //       _id: product._id,
-      //       name: product.name,
-      //       price: product.price,
-      //       request: {
-      //         type: "GET",
-      //         url: `http://localhost:3000/products/${product._id}`,
-      //       },
-      //     };
-      //   }),
-      // };
-      // res.status(200).json(response);
-      res.status(200).json({ count: products.length, products: products });
+      res.status(200).json(products);
       logger.info("Products fetched successfully");
     })
     .catch((err) => {
@@ -65,20 +37,20 @@ exports.getProducts = (req, res, next) => {
 };
 
 exports.getProduct = (req, res, next) => {
-  Product.findById(req.params.id)
-    .select("_id name price")
+  productHelper
+    .findProduct(req.params.id)
     .then((product) => {
       if (product) {
         res.status(200).json(product);
         logger.info("Product fetched successfully");
       } else {
-        res.status(404).json({ message: "Product not found!" });
+        res.status(401).json({ message: "Product not found!" });
         logger.warn("Product not found!");
       }
     })
     .catch((err) => {
       res.status(500).json({
-        error: err,
+        error: "Something went wrong",
       });
       logger.error(err);
     });

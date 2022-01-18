@@ -3,44 +3,25 @@ const logger = require("../../util/logger");
 
 const Order = require("../models/order");
 const Product = require("../models/product");
+const OrderHelper = require("../helpers/order");
+
+const orderHelper = new OrderHelper();
 
 exports.createOrder = (req, res, next) => {
-  const productIds = req.body.products.map((product) => product.productId);
-  Product.find({ _id: { $in: productIds } })
-    .count()
-    .then((count) => {
-      if (count !== productIds.length) {
-        res.status(404).json({
-          message: "Product(s) not found",
-        });
-        logger.info("Product(s) not found");
-      } else {
-        const order = new Order({
-          _id: mongoose.Types.ObjectId(),
-          products: req.body.products,
-        });
-        order
-          .save()
-          .then((result) => {
-            res.status(201).json({
-              message: "Order created successfully",
-              createdOrder: {
-                _id: result._id,
-                products: result.products,
-              },
-            });
-            logger.info("Order created successfully");
-          })
-          .catch((err) => {
-            res.status(500).json({
-              error: err,
-            });
-            logger.error(err);
-          });
-      }
+  orderHelper
+    .createOrder(req.body)
+    .then((order) => {
+      res.status(201).json({
+        message: "Order created successfully",
+        order: order,
+      });
+      logger.info("Order created successfully");
     })
     .catch((err) => {
-      console.log(err);
+      res.status(500).json({
+        error: "Something went wrong",
+      });
+      logger.error(err);
     });
 };
 
