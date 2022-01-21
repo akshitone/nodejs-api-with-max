@@ -1,23 +1,23 @@
-const mongoose = require("mongoose");
 const logger = require("../../util/logger");
-
-const Product = require("../models/product");
 const ProductHelper = require("../helpers/product");
+const Product = require("../models/product");
 
 const productHelper = new ProductHelper();
 
 exports.createProduct = (req, res, next) => {
+  console.log(req);
   productHelper
     .createProduct(req.body)
     .then((product) => {
-      res.status(201).json(product);
-      logger.info("Product created successfully");
+      res.status(201).json({
+        message: "Product created successfully",
+        product: product,
+      });
     })
     .catch((err) => {
       res.status(500).json({
-        error: err,
+        error: "Something went wrong",
       });
-      logger.error(err);
     });
 };
 
@@ -25,14 +25,15 @@ exports.getProducts = (req, res, next) => {
   productHelper
     .findProducts()
     .then((products) => {
-      res.status(200).json(products);
-      logger.info("Products fetched successfully");
+      res.status(200).json({
+        count: products.length,
+        products: products,
+      });
     })
     .catch((err) => {
       res.status(500).json({
-        error: err,
+        error: "Something went wrong",
       });
-      logger.error(err);
     });
 };
 
@@ -42,63 +43,41 @@ exports.getProduct = (req, res, next) => {
     .then((product) => {
       if (product) {
         res.status(200).json(product);
-        logger.info("Product fetched successfully");
       } else {
-        res.status(401).json({ message: "Product not found!" });
-        logger.warn("Product not found!");
+        res.status(401).json({ message: "Product not found" });
       }
     })
     .catch((err) => {
       res.status(500).json({
         error: "Something went wrong",
       });
-      logger.error(err);
     });
 };
 
 exports.deleteProduct = (req, res, next) => {
-  Product.deleteOne({ _id: req.params.id })
+  productHelper
+    .deleteProduct(req.params.id)
     .then((result) => {
-      if (result.deletedCount > 0) {
-        res.status(200).json({ message: "Product deleted successfully" });
-        logger.info("Product deleted successfully");
-      } else {
-        res.status(401).json({ message: "Product not found!" });
-        logger.warn("Product not found!");
-      }
+      res.status(200).json({ message: "Product deleted successfully" });
     })
     .catch((err) => {
       res.status(500).json({
-        error: err,
+        error: "Something went wrong",
       });
-      logger.error(err);
     });
 };
 
 exports.updateProduct = (req, res, next) => {
-  const product = new Product({
-    _id: req.body.id,
-    name: req.body.name,
-    price: req.body.price,
-  });
-  Product.updateOne({ _id: req.params.id }, product)
+  productHelper
+    .updateProduct(req.params.id, req.body)
     .then((result) => {
-      logger.info(result);
-      if (result.matchedCount > 0) {
-        res.status(200).json({
-          message: "Product updated successfully",
-          updatedProduct: product,
-        });
-        logger.info("Product updated successfully");
-      } else {
-        res.status(401).json({ message: "Product not found!" });
-        logger.warn("Product not found!");
-      }
+      res.status(200).json({
+        message: "Product updated successfully",
+      });
     })
     .catch((err) => {
       res.status(500).json({
-        error: err,
+        error: "Something went wrong",
       });
-      logger.error(err);
     });
 };
