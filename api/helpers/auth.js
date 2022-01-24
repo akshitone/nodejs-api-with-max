@@ -187,4 +187,4 @@ class AuthHelper {
   }
 }
 
-module.exports = AuthHelper;
+module.exports = new AuthHelper();

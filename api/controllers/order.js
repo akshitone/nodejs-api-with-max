@@ -1,9 +1,4 @@
-const logger = require("../../util/logger");
-
-const Order = require("../models/order");
-const OrderHelper = require("../helpers/order");
-
-const orderHelper = new OrderHelper();
+const orderHelper = require("../helpers/order");
 
 exports.createOrder = (req, res, next) => {
   orderHelper
@@ -13,13 +8,11 @@ exports.createOrder = (req, res, next) => {
         message: "Order created successfully",
         order: order,
       });
-      logger.info("Order created successfully");
     })
     .catch((err) => {
       res.status(500).json({
         error: "Something went wrong",
       });
-      logger.error(err);
     });
 };
 

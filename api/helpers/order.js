@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const logger = require("../../util/logger");
-const order = require("../models/order");
 const Order = require("../models/order");
 
 const ProductHelper = require("./product");
@@ -138,4 +137,4 @@ class OrderHelper extends ProductHelper {
   }
 }
 
-module.exports = OrderHelper;
+module.exports = new OrderHelper();

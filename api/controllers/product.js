@@ -1,11 +1,9 @@
-const logger = require("../../util/logger");
 const ProductHelper = require("../helpers/product");
-const Product = require("../models/product");
+const ApiError = require("../../util/errors/ApiError");
 
 const productHelper = new ProductHelper();
 
 exports.createProduct = (req, res, next) => {
-  console.log(req);
   productHelper
     .createProduct(req.body)
     .then((product) => {
@@ -15,9 +13,9 @@ exports.createProduct = (req, res, next) => {
       });
     })
     .catch((err) => {
-      res.status(500).json({
-        error: "Something went wrong",
-      });
+      console.log("Getting error");
+      next(ApiError.badRequest(err.message));
+      return;
     });
 };
 
@@ -31,9 +29,7 @@ exports.getProducts = (req, res, next) => {
       });
     })
     .catch((err) => {
-      res.status(500).json({
-        error: "Something went wrong",
-      });
+      next(ApiError.badRequest(err.message));
     });
 };
 
@@ -44,13 +40,11 @@ exports.getProduct = (req, res, next) => {
       if (product) {
         res.status(200).json(product);
       } else {
-        res.status(401).json({ message: "Product not found" });
+        next(ApiError.notFound("Product not found"));
       }
     })
     .catch((err) => {
-      res.status(500).json({
-        error: "Something went wrong",
-      });
+      next(ApiError.badRequest(err.message));
     });
 };
 

@@ -1,6 +1,4 @@
-const AuthHelper = require("../helpers/auth");
-
-const authHelper = new AuthHelper();
+const authHelper = require("../helpers/auth");
 
 exports.signup = (req, res, next) => {
   authHelper

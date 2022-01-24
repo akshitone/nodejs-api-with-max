@@ -1,10 +1,13 @@
 const express = require("express");
 const mongoose = require("mongoose");
 
+const logger = require("./util/logger");
+const { apiErrorHandler } = require("./util/errors/apiErrorHandler");
+
 const productRoutes = require("./api/routes/product");
 const orderRoutes = require("./api/routes/order");
 const authRoutes = require("./api/routes/auth");
-const logger = require("./util/logger");
+const ApiError = require("./util/errors/ApiError");
 
 const app = express();
 
@@ -32,17 +35,9 @@ app.get("/", (req, res) => {
 app.use((req, res, next) => {
   const error = new Error("Endpoint not found");
   error.status = 404;
-  next(error);
+  next(ApiError.badRequest(error.message));
 });
 
-app.use((error, req, res, next) => {
-  res.status(error.status || 500);
-  res.json({
-    error: {
-      message: error.message,
-    },
-  });
-  logger.error(error.message);
-});
+app.use(apiErrorHandler);
 
 module.exports = app;
